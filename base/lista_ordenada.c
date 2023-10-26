@@ -49,76 +49,66 @@ int main()
 
 void insere(int n, Nodo **inicio)
 {
-    Nodo *novo, *ant, *atual;
+    Nodo *novo = (Nodo*)malloc(sizeof(Nodo));
+    if (!novo) exit(1);
 
-    novo = (Nodo*)malloc(sizeof(Nodo));
-    if(!novo) exit(1);
     novo->info = n;
+    novo->prox = NULL;
 
-    if(*inicio == NULL)
+    if (*inicio == NULL)
     {
-        novo->prox = NULL;
         *inicio = novo;
         return;
     }
 
-    ant = NULL;
-    atual = *inicio;
-
-    while((atual != NULL) && (novo->info > atual->info))
+    Nodo *atual = *inicio, *ant;
+    while ((atual != NULL) && (atual->info < novo->info))
     {
         ant = atual;
         atual = atual->prox;
     }
 
-    if (atual == NULL)
+    if (atual == *inicio)
+    {
+        novo->prox = atual;
+        *inicio = novo;
+    }
+    else if (atual == NULL)
     {
         ant->prox = novo;
-        novo->prox = NULL;
-    }
-    else if (atual == (*inicio))
-    {
-        novo->prox = *inicio;
-        *inicio = novo;
     }
     else
     {
         ant->prox = novo;
         novo->prox = atual;
     }
+    
 }
 
 int retira(int n, Nodo **inicio)
 {
-    Nodo *ret, *ant, *atual;
-    int num;
+    if (*inicio == NULL) return 0;
 
-    ant = NULL;
-    atual = *inicio;
-    while((atual != NULL) && (n != atual->info))
+    Nodo *atual = *inicio, *ant;
+    while ((atual != NULL) && (atual->info != n))
     {
         ant = atual;
         atual = atual->prox;
     }
 
-    if (atual == NULL) 
+    if (atual == NULL) exit(1);
+
+    if (atual == *inicio)
     {
-        printf("\nNumero não existe\n");
-        return 0;
+        *inicio = atual->prox;
     }
-    if (atual == (*inicio))
+    else 
     {
-        ret = *inicio;
-        *inicio = (*inicio)->prox;
-    }
-    else
-    {
-        ret = atual;
         ant->prox = atual->prox;
     }
 
-    num = ret->info;
-    free(ret);
+    int num = atual->info;
+    free(atual);
 
     return num;
 }

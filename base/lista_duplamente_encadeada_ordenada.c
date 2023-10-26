@@ -9,8 +9,7 @@ typedef struct nodo
 
 void inserir(Nodo**, int);
 int retirar(Nodo**, int);
-void print(Nodo*);
-void eliminar_impar(Nodo**);
+void print(Nodo**);
 
 int main()
 {
@@ -22,9 +21,9 @@ int main()
     {
         if (inicio)
         {
-            print(inicio);
+            print(&inicio);
         }
-        printf("\n[1] Inserir / [2] Retirar / [3] Eliminar ímpares: ");
+        printf("\n[1] Inserir / [2] Retirar: ");
         scanf(" %c", &opcao);
         switch (opcao)
         {
@@ -39,32 +38,13 @@ int main()
             valor = retirar(&inicio, valor);
             printf("\nValor retirado = %d", valor);
             break;
-        case '3':
-            eliminar_impar(&inicio);
-            break;
         default:
             printf("\nSaindo.\n");
             exit(1);
         }
     }
-    return 0;
-}
 
-void print(Nodo *inicio)
-{
-    printf("\nLista Crescente: ");
-    while(1)
-    {
-        if(inicio != NULL)
-        {
-            printf("%d ", inicio->info);
-            inicio = inicio->prox;
-        }
-        else
-        {
-            break;
-        }
-    }
+    return 0;
 }
 
 void inserir(Nodo **inicio, int n)
@@ -73,8 +53,8 @@ void inserir(Nodo **inicio, int n)
     if(!novo) exit(1);
 
     novo->info = n;
-    novo->ant = NULL;
     novo->prox = NULL;
+    novo->ant = NULL;
 
     if (*inicio == NULL)
     {
@@ -83,12 +63,9 @@ void inserir(Nodo **inicio, int n)
     }
 
     Nodo *atual = *inicio;
-    while((atual->prox != NULL) && (atual->info < novo->info))
-    {
-        atual = atual->prox;
-    }
+    while((atual->prox != NULL) && (novo->info > atual->info)) atual = atual->prox;
 
-    if ((atual->prox == NULL) && (atual->info < novo->info))
+    if ((atual->prox == NULL) && (novo->info > atual->info))
     {
         atual->prox = novo;
         novo->ant = atual;
@@ -110,58 +87,42 @@ void inserir(Nodo **inicio, int n)
 
 int retirar(Nodo **inicio, int n)
 {
-    if (*inicio == NULL)
-    {
-        return 0;
-    }
+    if (*inicio == NULL) return 0;
 
     Nodo *atual = *inicio;
-    while((atual->prox != NULL) && (atual->info != n))
-    {
-        atual = atual->prox;
-    }
+    while((atual->prox != NULL) && (atual->info != n)) atual = atual->prox;
 
     if (atual->info != n) return 0;
 
     if (atual == *inicio)
     {
         *inicio = atual->prox;
-        if (atual->prox != NULL)
-        {
-            atual->prox->ant = NULL;
-        }
+        if (atual->prox != NULL) (*inicio)->ant = NULL;
     }
-    else if (atual->prox != NULL)
+    else if(atual->prox == NULL)
     {
-        atual->ant->prox = atual->prox;
-        atual->prox->ant = atual->ant;
+        atual->ant->prox = NULL;
     }
     else
     {
-        atual->ant->prox = NULL;
+        atual->prox->ant = atual->ant;
+        atual->ant->prox = atual->prox;
     }
 
     int num = atual->info;
     free(atual);
-    
+
     return num;
 }
 
-void eliminar_impar(Nodo **inicio)
+void print(Nodo **inicio)
 {
-    Nodo *atual = *inicio, *aux;
-    while (atual != NULL)
-    {
+    Nodo *atual = *inicio;
 
-        if ((atual->info % 2) != 0)
-        {
-            aux = atual;
-            atual = atual->prox;
-            retirar(inicio, aux->info);
-        }
-        else
-        {
-            atual = atual->prox;
-        }
+    printf("\nLista: ");
+    while(atual != NULL)
+    {
+        printf("%d ", atual->info);
+        atual = atual->prox;
     }
 }
